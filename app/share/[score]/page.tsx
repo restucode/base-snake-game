@@ -9,6 +9,14 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { score } = await params;
 
+  // URL Website Anda
+  const appUrl = 'https://based-snake.vercel.app'; 
+  
+  // A. URL UNTUK GAMBAR (Visual Score)
+  // Ini harus mengarah ke API OG agar muncul gambar biru dengan angka skor
+  const imageUrl = `${appUrl}/api/og?score=${score}`;
+
+  // B. URL UNTUK TOMBOL (Action)
   // Ini link yang Anda berikan (Link ke direktori Mini App)
   const miniAppLink = `https://farcaster.xyz/miniapps/V811TN_FcAWi/snakeeee-gameeee`;
 
@@ -19,14 +27,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `I scored ${score} in Base Snake!`,
       description: 'Play Classic Snake on Base',
       // PERBAIKAN: Gunakan imageUrl di sini, BUKAN link aplikasi
-      images: [miniAppLink], 
+      images: [imageUrl], 
     },
     other: {
       "fc:frame": "vNext",
       // PERBAIKAN: Gunakan imageUrl di sini agar preview muncul
-      "fc:frame:image": miniAppLink, 
+      "fc:frame:image": imageUrl, 
       "fc:frame:button:1": "Play Now",
-      "fc:frame:button:1:action": "link",
+      "fc:frame:button:1:action": miniAppLink,
       // PERBAIKAN: Gunakan link aplikasi HANYA di target tombol
       "fc:frame:button:1:target": miniAppLink, 
     },
