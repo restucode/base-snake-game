@@ -3,23 +3,18 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import styles from "./page.module.css";
-
-// 1. IMPORT FONT DARI GOOGLE
 import { Press_Start_2P } from "next/font/google";
 
-// 2. KONFIGURASI FONT
 const pixelFont = Press_Start_2P({
   weight: "400",
   subsets: ["latin"],
 });
 
-// --- KONFIGURASI ---
 const GRID_SIZE = 20;
 const INITIAL_SNAKE = [{ x: 10, y: 10 }];
 const INITIAL_FOOD = { x: 15, y: 10 };
 const GAME_SPEED = 150;
 
-// Daftar Skin
 const SKINS = [
   { id: 'brian', src: '/brian.png', name: 'Brian' },
   { id: 'kersa', src: '/kersa.jpg', name: 'Kersa' },
@@ -30,10 +25,15 @@ const SKINS = [
 
 type Direction = "UP" | "DOWN" | "LEFT" | "RIGHT";
 
+// Helper URL
+const getBaseUrl = () => {
+  if (typeof window !== 'undefined') return window.location.origin;
+  return 'https://based-snake.vercel.app'; 
+};
+
 export default function Home() {
   const { isFrameReady, setFrameReady } = useMiniKit();
   
-  // --- Game State ---
   const [snake, setSnake] = useState(INITIAL_SNAKE);
   const [food, setFood] = useState(INITIAL_FOOD);
   
@@ -47,14 +47,12 @@ export default function Home() {
   
   const directionRef = useRef<Direction>("RIGHT");
 
-  // --- Minikit Setup ---
   useEffect(() => {
     if (!isFrameReady) {
       setFrameReady();
     }
   }, [setFrameReady, isFrameReady]);
 
-  // --- Game Logic: Generate Food ---
   const generateFood = useCallback(() => {
     let newFood: { x: number; y: number; };
     let isOnSnake;
@@ -68,7 +66,6 @@ export default function Home() {
     return newFood;
   }, [snake]);
 
-  // --- Game Logic: Movement ---
   const moveSnake = useCallback(() => {
     if (gameOver || !isPlaying) return;
 
@@ -102,13 +99,11 @@ export default function Home() {
 
   }, [snake, food, gameOver, isPlaying, generateFood]);
 
-  // --- Game Loop ---
   useEffect(() => {
     const gameInterval = setInterval(moveSnake, GAME_SPEED);
     return () => clearInterval(gameInterval);
   }, [moveSnake]);
 
-  // --- Keyboard Controls ---
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isPlaying) return;
@@ -124,7 +119,6 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isPlaying]);
 
-  // --- Helper Functions ---
   const handleStart = () => {
     setSnake(INITIAL_SNAKE);
     setFood(INITIAL_FOOD);
@@ -152,31 +146,34 @@ export default function Home() {
     setDirection(dir);
   };
 
-  // --- SHARE FUNCTIONS (DIPERBAIKI) ---
+  // --- SHARE FUNCTIONS ---
   const getShareText = () => `I scored ${score} in Base Snake! 🐍 Can you beat me?`;
 
+  // 1. Share ke X (Twitter)
   const handleShareX = () => {
     const text = encodeURIComponent(getShareText());
-    // WAJIB Hardcode URL Vercel di sini agar link tidak error saat test lokal
+    // Arahkan ke halaman share khusus agar ada preview score saat link dipost
     const appUrl = 'https://based-snake.vercel.app';
     const url = encodeURIComponent(`${appUrl}/share/${score}`);
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
   };
 
+  // 2. Share ke Warpcast (Farcaster)
   const handleShareWarpcast = () => {
     const text = encodeURIComponent(getShareText());
     
-    // PERBAIKAN PENTING:
-    // Kita gunakan URL Vercel asli.
-    // Ketika orang mengklik link ini, file 'app/share/[score]/page.tsx' akan bekerja
-    // dan tombol 'Play Now' di frame tersebut SUDAH kita atur ke Deep Link Warpcast.
-    // Jadi user TIDAK akan terlempar ke browser.
+    // PENTING:
+    // Kita embed URL dari halaman metadata kita (/share/[score]).
+    // Warpcast akan membaca metadata di halaman itu:
+    // - Gambar diambil dari API OG
+    // - Tombol Play diarahkan ke Deep Link Mini App
     const appUrl = 'https://based-snake.vercel.app';
     const url = encodeURIComponent(`${appUrl}/share/${score}`); 
     
     window.open(`https://warpcast.com/~/compose?text=${text}&embeds[]=${url}`, '_blank');
   };
 
+  // 3. Share Native (Copy Link)
   const handleShareNative = async () => {
     const appUrl = 'https://based-snake.vercel.app';
     const shareUrl = `${appUrl}/share/${score}`;
@@ -197,7 +194,6 @@ export default function Home() {
     }
   };
 
-  // --- Rendering Board ---
   const board = Array.from({ length: GRID_SIZE * GRID_SIZE });
 
   return (
@@ -208,8 +204,6 @@ export default function Home() {
       </div>
 
       <div className={styles.gameBoard}>
-        
-        {/* LAYAR GAME OVER */}
         {gameOver && (
           <div className={styles.gameOverOverlay}>
             <h2 className={styles.title}>Game Over!</h2>
@@ -220,25 +214,16 @@ export default function Home() {
             </button>
 
             <div className={styles.shareContainer}>
-              <button className={`${styles.shareBtn} ${styles.xBtn}`} onClick={handleShareX}>
-                X
-              </button>
-              <button className={`${styles.shareBtn} ${styles.warpBtn}`} onClick={handleShareWarpcast}>
-                Warp
-              </button>
-              <button className={`${styles.shareBtn} ${styles.baseBtn}`} onClick={handleShareNative}>
-                Share
-              </button>
+              <button className={`${styles.shareBtn} ${styles.xBtn}`} onClick={handleShareX}>X</button>
+              <button className={`${styles.shareBtn} ${styles.warpBtn}`} onClick={handleShareWarpcast}>Warp</button>
+              <button className={`${styles.shareBtn} ${styles.baseBtn}`} onClick={handleShareNative}>Share</button>
             </div>
-
           </div>
         )}
 
-        {/* LAYAR UTAMA / PILIH SKIN */}
         {!isPlaying && !gameOver && (
            <div className={styles.gameOverOverlay}>
              <h2 className={styles.title}>Choose Your Skin</h2>
-             
              <div className={styles.skinSelector}>
                 {SKINS.map((skin) => (
                   <img 
@@ -250,36 +235,25 @@ export default function Home() {
                   />
                 ))}
              </div>
-
-             <button className={styles.startButton} onClick={handleStart}>
-               Start
-             </button>
+             <button className={styles.startButton} onClick={handleStart}>Start</button>
            </div>
         )}
 
-        {/* LOGIKA RENDER PAPAN */}
         {board.map((_, index) => {
           const x = index % GRID_SIZE;
           const y = Math.floor(index / GRID_SIZE);
-          
           const isSnake = snake.some(s => s.x === x && s.y === y);
           const isFood = food.x === x && food.y === y;
-
           let content = null;
           const cellStyle = styles.cell; 
 
           if (isSnake) {
             content = <img src={selectedSkin} alt="snake" className={styles.snakeImage} />;
-          } 
-          else if (isFood) {
+          } else if (isFood) {
             content = <img src="/base.jpg" alt="food" className={styles.foodImage} />;
           }
 
-          return (
-            <div key={`${x}-${y}`} className={cellStyle}>
-              {content}
-            </div>
-          );
+          return <div key={`${x}-${y}`} className={cellStyle}>{content}</div>;
         })}
       </div>
 
@@ -293,7 +267,6 @@ export default function Home() {
         <div></div> 
         <button className={styles.controlBtn} onClick={() => handleMobileControl("UP")}>⬆️</button>
         <div></div>
-
         <button className={styles.controlBtn} onClick={() => handleMobileControl("LEFT")}>⬅️</button>
         <button className={styles.controlBtn} onClick={() => handleMobileControl("DOWN")}>⬇️</button>
         <button className={styles.controlBtn} onClick={() => handleMobileControl("RIGHT")}>➡️</button>
