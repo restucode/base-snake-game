@@ -9,14 +9,6 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { score } = await params;
 
-  // URL Website Anda
-  const appUrl = 'https://based-snake.vercel.app'; 
-  
-  // A. URL UNTUK GAMBAR (Visual Score)
-  // Ini harus mengarah ke API OG agar muncul gambar biru dengan angka skor
-  const imageUrl = `${appUrl}/api/og?score=${score}`;
-
-  // B. URL UNTUK TOMBOL (Action)
   // Ini link yang Anda berikan (Link ke direktori Mini App)
   const miniAppLink = `https://farcaster.xyz/miniapps/V811TN_FcAWi/snakeeee-gameeee`;
 
