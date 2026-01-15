@@ -10,6 +10,7 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const score = params.score;
 
+
   const appUrl = 'https://based-snake.vercel.app'; 
   
   // URL Gambar (Pastikan route API-nya benar)
