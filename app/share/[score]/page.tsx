@@ -1,19 +1,25 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-// 1. UPDATE TYPE DEFINITION: params harus Promise
+// 1. TYPE DEFINITION (Tetap)
 type Props = {
   params: Promise<{ score: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  // 2. AWAIT PARAMS: Ambil score setelah di-await
+  // 2. AWAIT PARAMS (Tetap)
   const { score } = await params;
 
-  // Pastikan URL ini sesuai dengan URL produksi Anda (hardcoded lebih aman)
+  // --- PERBAIKAN DI SINI ---
+  // Pastikan tidak ada slash (/) di akhir URL agar rapi
   const appUrl = 'https://based-snake.vercel.app'; 
   
+  // URL untuk gambar Score
   const imageUrl = `${appUrl}/api/og?score=${score}`;
+
+  // URL DEEP LINK WARPCAST
+  // Ini kuncinya: Membungkus URL game Anda ke dalam format launch frame Warpcast
+  const warpcastDeepLink = `https://farcaster.xyz/~/frames/launch?url=${encodeURIComponent(appUrl)}`;
 
   return {
     title: `I scored ${score} in Base Snake!`,
@@ -27,15 +33,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       "fc:frame": "vNext",
       "fc:frame:image": imageUrl,
       "fc:frame:button:1": "Play Now",
-      "fc:frame:button:1:action": "link",
-      "fc:frame:button:1:target": appUrl,
+      "fc:frame:button:1:action": "link", // Tetap 'link', tapi targetnya khusus
+      "fc:frame:button:1:target": warpcastDeepLink, // Gunakan Deep Link di sini
     },
   };
 }
 
-// 3. JADIKAN KOMPONEN ASYNC: Tambahkan 'async' di depan function
+// 3. KOMPONEN UI (Tetap sama)
 export default async function SharePage({ params }: Props) {
-  // 4. AWAIT PARAMS DI SINI JUGA
   const { score } = await params;
 
   return (
@@ -52,6 +57,8 @@ export default async function SharePage({ params }: Props) {
       <h1>Score: {score}</h1>
       <p style={{ marginBottom: '20px' }}>Your friend challenged you to beat their score!</p>
       
+      {/* Tombol ini tetap mengarah ke home biasa, karena jika user membuka
+          halaman share ini di browser biasa, mereka akan diarahkan ke game utama */}
       <Link href="/" style={{
         marginTop: '10px',
         padding: '15px 30px',
