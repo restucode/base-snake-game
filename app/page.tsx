@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
@@ -11,6 +12,7 @@ const pixelFont = Press_Start_2P({
   weight: "400",
   subsets: ["latin"],
 });
+
 // --- KONFIGURASI ---
 const GRID_SIZE = 20;
 const INITIAL_SNAKE = [{ x: 10, y: 10 }];
@@ -37,7 +39,11 @@ export default function Home() {
   // --- Game State ---
   const [snake, setSnake] = useState(INITIAL_SNAKE);
   const [food, setFood] = useState(INITIAL_FOOD);
-  const [direction, setDirection] = useState<Direction>("RIGHT");
+  
+  // PERBAIKAN 1: 'direction' tidak dipakai, ganti jadi '_' atau hapus destructuringnya
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setDirection] = useState<Direction>("RIGHT");
+  
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -54,27 +60,26 @@ export default function Home() {
 
   // --- Game Logic: Generate Food ---
   const generateFood = useCallback(() => {
-    let newFood: { x: any; y: any; };
+    // PERBAIKAN 2: Ganti 'any' dengan 'number'
+    let newFood: { x: number; y: number; };
     let isOnSnake;
     do {
       newFood = {
         x: Math.floor(Math.random() * GRID_SIZE),
         y: Math.floor(Math.random() * GRID_SIZE),
       };
-      // eslint-disable-next-line no-loop-func
+      // PERBAIKAN 3: Hapus komentar eslint-disable yang tidak perlu
       isOnSnake = snake.some(segment => segment.x === newFood.x && segment.y === newFood.y);
     } while (isOnSnake);
     return newFood;
   }, [snake]);
 
-  // --- Game Logic: Movement (DIPERBAIKI) ---
+  // --- Game Logic: Movement ---
   const moveSnake = useCallback(() => {
     if (gameOver || !isPlaying) return;
 
-    // 1. Ambil kepala ular saat ini langsung dari state
     const newHead = { ...snake[0] };
 
-    // 2. Tentukan posisi baru
     switch (directionRef.current) {
       case "UP": newHead.y -= 1; break;
       case "DOWN": newHead.y += 1; break;
@@ -82,33 +87,26 @@ export default function Home() {
       case "RIGHT": newHead.x += 1; break;
     }
 
-    // 3. Logic Tembus Dinding
     newHead.x = (newHead.x + GRID_SIZE) % GRID_SIZE;
     newHead.y = (newHead.y + GRID_SIZE) % GRID_SIZE;
 
-    // 4. Cek Tabrakan Diri Sendiri
     if (snake.some((segment) => segment.x === newHead.x && segment.y === newHead.y)) {
       setGameOver(true);
       setIsPlaying(false);
       return;
     }
 
-    // 5. Cek Makan (Logic Score diperbaiki di sini)
     if (newHead.x === food.x && newHead.y === food.y) {
-      // Score bertambah 1 secara pasti (tidak double count)
       setScore((s) => s + 1);
       setFood(generateFood());
-      
-      // Ular memanjang (tambah kepala baru tanpa membuang ekor)
       setSnake([newHead, ...snake]);
     } else {
-      // Ular bergerak (tambah kepala baru, buang ekor lama)
       const newSnake = [newHead, ...snake];
       newSnake.pop(); 
       setSnake(newSnake);
     }
 
-  }, [snake, food, gameOver, isPlaying, generateFood]); // PERHATIKAN: 'snake' dimasukkan ke dependency
+  }, [snake, food, gameOver, isPlaying, generateFood]);
 
   // --- Game Loop ---
   useEffect(() => {
@@ -262,7 +260,8 @@ export default function Home() {
           const isFood = food.x === x && food.y === y;
 
           let content = null;
-          let cellStyle = styles.cell;
+          // PERBAIKAN 4: Gunakan 'const' karena variabel ini tidak direassign lagi
+          const cellStyle = styles.cell; 
 
           if (isSnake) {
             content = <img src={selectedSkin} alt="snake" className={styles.snakeImage} />;
