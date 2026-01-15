@@ -25,19 +25,13 @@ const SKINS = [
 
 type Direction = "UP" | "DOWN" | "LEFT" | "RIGHT";
 
-// Helper URL
-const getBaseUrl = () => {
-  if (typeof window !== 'undefined') return window.location.origin;
-  return 'https://based-snake.vercel.app'; 
-};
-
 export default function Home() {
   const { isFrameReady, setFrameReady } = useMiniKit();
   
   const [snake, setSnake] = useState(INITIAL_SNAKE);
   const [food, setFood] = useState(INITIAL_FOOD);
   
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // PERBAIKAN: Hapus komentar eslint-disable, biarkan _ menangani unused var
   const [_, setDirection] = useState<Direction>("RIGHT");
   
   const [gameOver, setGameOver] = useState(false);
@@ -152,7 +146,6 @@ export default function Home() {
   // 1. Share ke X (Twitter)
   const handleShareX = () => {
     const text = encodeURIComponent(getShareText());
-    // Arahkan ke halaman share khusus agar ada preview score saat link dipost
     const appUrl = 'https://based-snake.vercel.app';
     const url = encodeURIComponent(`${appUrl}/share/${score}`);
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
@@ -161,12 +154,6 @@ export default function Home() {
   // 2. Share ke Warpcast (Farcaster)
   const handleShareWarpcast = () => {
     const text = encodeURIComponent(getShareText());
-    
-    // PENTING:
-    // Kita embed URL dari halaman metadata kita (/share/[score]).
-    // Warpcast akan membaca metadata di halaman itu:
-    // - Gambar diambil dari API OG
-    // - Tombol Play diarahkan ke Deep Link Mini App
     const appUrl = 'https://based-snake.vercel.app';
     const url = encodeURIComponent(`${appUrl}/share/${score}`); 
     
