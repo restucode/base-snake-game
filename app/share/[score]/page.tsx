@@ -1,19 +1,18 @@
-// app/share/[score]/page.tsx
-
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+// 1. UPDATE TYPE DEFINITION: params harus Promise
 type Props = {
-  params: { score: string };
+  params: Promise<{ score: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const score = params.score;
+  // 2. AWAIT PARAMS: Ambil score setelah di-await
+  const { score } = await params;
 
-
+  // Pastikan URL ini sesuai dengan URL produksi Anda (hardcoded lebih aman)
   const appUrl = 'https://based-snake.vercel.app'; 
   
-  // URL Gambar (Pastikan route API-nya benar)
   const imageUrl = `${appUrl}/api/og?score=${score}`;
 
   return {
@@ -22,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: `I scored ${score} in Base Snake!`,
       description: 'Play Classic Snake on Base',
-      images: [imageUrl], // Ini yang akan diambil Warpcast
+      images: [imageUrl],
     },
     other: {
       "fc:frame": "vNext",
@@ -34,14 +33,38 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function SharePage({ params }: Props) {
-  // ... (Sisa kode komponen UI sama seperti sebelumnya)
-  const score = params.score; // Pastikan ambil score untuk ditampilkan di UI juga
-  
+// 3. JADIKAN KOMPONEN ASYNC: Tambahkan 'async' di depan function
+export default async function SharePage({ params }: Props) {
+  // 4. AWAIT PARAMS DI SINI JUGA
+  const { score } = await params;
+
   return (
-    <div style={{ /* style... */ }}>
-       <h1>Score: {score}</h1>
-       {/* ... sisa kode ... */}
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      height: '100vh', 
+      background: '#0052FF', 
+      color: 'white', 
+      fontFamily: 'sans-serif'
+    }}>
+      <h1>Score: {score}</h1>
+      <p style={{ marginBottom: '20px' }}>Your friend challenged you to beat their score!</p>
+      
+      <Link href="/" style={{
+        marginTop: '10px',
+        padding: '15px 30px',
+        background: 'white',
+        color: '#0052FF',
+        textDecoration: 'none',
+        borderRadius: '10px',
+        fontWeight: 'bold',
+        fontSize: '1.2rem',
+        cursor: 'pointer'
+      }}>
+        Play Game
+      </Link>
     </div>
-  )
+  );
 }

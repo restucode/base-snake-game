@@ -19,8 +19,8 @@ const INITIAL_SNAKE = [{ x: 10, y: 10 }];
 const INITIAL_FOOD = { x: 15, y: 10 };
 const GAME_SPEED = 150;
 
-// GANTI DENGAN URL DEPLOYMENT ANDA NANTI
-const GAME_URL = "https://based-snake.vercel.app/"; 
+// PERBAIKAN: Hapus konstanta GAME_URL karena tidak dipakai lagi
+// const GAME_URL = "..." <-- INI DIHAPUS
 
 // Daftar Skin
 const SKINS = [
@@ -33,6 +33,13 @@ const SKINS = [
 
 type Direction = "UP" | "DOWN" | "LEFT" | "RIGHT";
 
+// Fungsi helper untuk mendapatkan URL saat ini secara dinamis
+const getBaseUrl = () => {
+  if (typeof window !== 'undefined') return window.location.origin;
+  // Fallback jika SSR (Server Side Rendering), ganti dengan domain asli Anda
+  return 'https://based-snake.vercel.app'; 
+};
+
 export default function Home() {
   const { isFrameReady, setFrameReady } = useMiniKit();
   
@@ -40,8 +47,7 @@ export default function Home() {
   const [snake, setSnake] = useState(INITIAL_SNAKE);
   const [food, setFood] = useState(INITIAL_FOOD);
   
-  // PERBAIKAN 1: 'direction' tidak dipakai, ganti jadi '_' atau hapus destructuringnya
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // PERBAIKAN: Hapus komentar eslint-disable karena sudah bersih
   const [_, setDirection] = useState<Direction>("RIGHT");
   
   const [gameOver, setGameOver] = useState(false);
@@ -60,7 +66,6 @@ export default function Home() {
 
   // --- Game Logic: Generate Food ---
   const generateFood = useCallback(() => {
-    // PERBAIKAN 2: Ganti 'any' dengan 'number'
     let newFood: { x: number; y: number; };
     let isOnSnake;
     do {
@@ -68,7 +73,6 @@ export default function Home() {
         x: Math.floor(Math.random() * GRID_SIZE),
         y: Math.floor(Math.random() * GRID_SIZE),
       };
-      // PERBAIKAN 3: Hapus komentar eslint-disable yang tidak perlu
       isOnSnake = snake.some(segment => segment.x === newFood.x && segment.y === newFood.y);
     } while (isOnSnake);
     return newFood;
@@ -159,34 +163,23 @@ export default function Home() {
   };
 
   // --- SHARE FUNCTIONS ---
- const getBaseUrl = () => {
-  if (typeof window !== 'undefined') return window.location.origin;
-  return 'https://based-snake.vercel.app'; 
-};
-
-// ... di dalam component Home ...
-
-  // --- SHARE FUNCTIONS YANG SUDAH DIUPDATE ---
   const getShareText = () => `I scored ${score} in Base Snake! 🐍 Can you beat me?`;
 
   const handleShareX = () => {
     const text = encodeURIComponent(getShareText());
-    // SHARE KE HALAMAN KHUSUS SKOR
+    // Gunakan getBaseUrl() pengganti GAME_URL
     const url = encodeURIComponent(`${getBaseUrl()}/share/${score}`);
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
   };
 
   const handleShareWarpcast = () => {
     const text = encodeURIComponent(getShareText());
-    // SHARE KE HALAMAN KHUSUS SKOR
-    // Farcaster akan crawl halaman ini dan mengambil gambar dari generateMetadata
     const url = encodeURIComponent(`${getBaseUrl()}/share/${score}`); 
     window.open(`https://warpcast.com/~/compose?text=${text}&embeds[]=${url}`, '_blank');
   };
 
   const handleShareNative = async () => {
     const shareUrl = `${getBaseUrl()}/share/${score}`;
-    
     if (navigator.share) {
       try {
         await navigator.share({
@@ -202,109 +195,108 @@ export default function Home() {
       alert("Link copied to clipboard!");
     }
   };
+
   // --- Rendering Board ---
   const board = Array.from({ length: GRID_SIZE * GRID_SIZE });
 
   return (
-      <div className={styles.container}>
-        <div className={styles.header}>
-          <h1 className={`${styles.h1Snake} ${pixelFont.className}`}>Snakeeee Gameeee</h1>
-          <div className={styles.scoreBoard}>Score: {score}</div>
-        </div>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h1 className={`${styles.h1Snake} ${pixelFont.className}`}>Snakeeee Gameeee</h1>
+        <div className={styles.scoreBoard}>Score: {score}</div>
+      </div>
 
-        <div className={styles.gameBoard}>
-          
-          {/* LAYAR GAME OVER */}
-          {gameOver && (
-            <div className={styles.gameOverOverlay}>
-              <h2 className={styles.title}>Game Over!</h2>
-              <p>Final Score: {score}</p>
-              
-              <button className={styles.startButton} onClick={handleBackToMenu}>
-                Play Again
-              </button>
-
-              {/* --- TOMBOL SHARE SOSIAL MEDIA --- */}
-              <div className={styles.shareContainer}>
-                <button className={`${styles.shareBtn} ${styles.xBtn}`} onClick={handleShareX}>
-                  X
-                </button>
-                <button className={`${styles.shareBtn} ${styles.warpBtn}`} onClick={handleShareWarpcast}>
-                  Warp
-                </button>
-                <button className={`${styles.shareBtn} ${styles.baseBtn}`} onClick={handleShareNative}>
-                  Share
-                </button>
-              </div>
-
-            </div>
-          )}
-
-          {/* LAYAR UTAMA / PILIH SKIN */}
-          {!isPlaying && !gameOver && (
-            <div className={styles.gameOverOverlay}>
-              <h2 className={styles.title}>Choose Your Skin</h2>
-              
-              <div className={styles.skinSelector}>
-                  {SKINS.map((skin) => (
-                    <img 
-                      key={skin.id}
-                      src={skin.src}
-                      alt={skin.name}
-                      className={selectedSkin === skin.src ? `${styles.skinOption} ${styles.selectedSkin}` : styles.skinOption}
-                      onClick={() => setSelectedSkin(skin.src)}
-                    />
-                  ))}
-              </div>
-
-              <button className={styles.startButton} onClick={handleStart}>
-                Start
-              </button>
-            </div>
-          )}
-
-          {/* LOGIKA RENDER PAPAN */}
-          {board.map((_, index) => {
-            const x = index % GRID_SIZE;
-            const y = Math.floor(index / GRID_SIZE);
+      <div className={styles.gameBoard}>
+        
+        {/* LAYAR GAME OVER */}
+        {gameOver && (
+          <div className={styles.gameOverOverlay}>
+            <h2 className={styles.title}>Game Over!</h2>
+            <p>Final Score: {score}</p>
             
-            const isSnake = snake.some(s => s.x === x && s.y === y);
-            const isFood = food.x === x && food.y === y;
+            <button className={styles.startButton} onClick={handleBackToMenu}>
+              Play Again
+            </button>
 
-            let content = null;
-            // PERBAIKAN 4: Gunakan 'const' karena variabel ini tidak direassign lagi
-            const cellStyle = styles.cell; 
+            <div className={styles.shareContainer}>
+              <button className={`${styles.shareBtn} ${styles.xBtn}`} onClick={handleShareX}>
+                X
+              </button>
+              <button className={`${styles.shareBtn} ${styles.warpBtn}`} onClick={handleShareWarpcast}>
+                Warp
+              </button>
+              <button className={`${styles.shareBtn} ${styles.baseBtn}`} onClick={handleShareNative}>
+                Share
+              </button>
+            </div>
 
-            if (isSnake) {
-              content = <img src={selectedSkin} alt="snake" className={styles.snakeImage} />;
-            } 
-            else if (isFood) {
-              content = <img src="/base.jpg" alt="food" className={styles.foodImage} />;
-            }
+          </div>
+        )}
 
-            return (
-              <div key={`${x}-${y}`} className={cellStyle}>
-                {content}
-              </div>
-            );
-          })}
-        </div>
+        {/* LAYAR UTAMA / PILIH SKIN */}
+        {!isPlaying && !gameOver && (
+           <div className={styles.gameOverOverlay}>
+             <h2 className={styles.title}>Choose Your Skin</h2>
+             
+             <div className={styles.skinSelector}>
+                {SKINS.map((skin) => (
+                  <img 
+                    key={skin.id}
+                    src={skin.src}
+                    alt={skin.name}
+                    className={selectedSkin === skin.src ? `${styles.skinOption} ${styles.selectedSkin}` : styles.skinOption}
+                    onClick={() => setSelectedSkin(skin.src)}
+                  />
+                ))}
+             </div>
 
-        <div>
-          <p className={styles.copyRight}>
-            Build on <img src="/base.jpg" alt="Base" className={styles.inlineBaseLogo} /> - kersa.base.eth
-          </p>
-        </div>
+             <button className={styles.startButton} onClick={handleStart}>
+               Start
+             </button>
+           </div>
+        )}
 
-        <div className={styles.controls}>
-          <div></div> 
-          <button className={styles.controlBtn} onClick={() => handleMobileControl("UP")}>⬆️</button>
-          <div></div>
+        {/* LOGIKA RENDER PAPAN */}
+        {board.map((_, index) => {
+          const x = index % GRID_SIZE;
+          const y = Math.floor(index / GRID_SIZE);
+          
+          const isSnake = snake.some(s => s.x === x && s.y === y);
+          const isFood = food.x === x && food.y === y;
 
-          <button className={styles.controlBtn} onClick={() => handleMobileControl("LEFT")}>⬅️</button>
-          <button className={styles.controlBtn} onClick={() => handleMobileControl("DOWN")}>⬇️</button>
-          <button className={styles.controlBtn} onClick={() => handleMobileControl("RIGHT")}>➡️</button>
-        </div>
+          let content = null;
+          const cellStyle = styles.cell; 
+
+          if (isSnake) {
+            content = <img src={selectedSkin} alt="snake" className={styles.snakeImage} />;
+          } 
+          else if (isFood) {
+            content = <img src="/base.jpg" alt="food" className={styles.foodImage} />;
+          }
+
+          return (
+            <div key={`${x}-${y}`} className={cellStyle}>
+              {content}
+            </div>
+          );
+        })}
+      </div>
+
+      <div>
+        <p className={styles.copyRight}>
+          Build on <img src="/base.jpg" alt="Base" className={styles.inlineBaseLogo} /> - kersa.base.eth
+        </p>
+      </div>
+
+      <div className={styles.controls}>
+        <div></div> 
+        <button className={styles.controlBtn} onClick={() => handleMobileControl("UP")}>⬆️</button>
+        <div></div>
+
+        <button className={styles.controlBtn} onClick={() => handleMobileControl("LEFT")}>⬅️</button>
+        <button className={styles.controlBtn} onClick={() => handleMobileControl("DOWN")}>⬇️</button>
+        <button className={styles.controlBtn} onClick={() => handleMobileControl("RIGHT")}>➡️</button>
+      </div>
     </div>
   );
 }
