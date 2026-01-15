@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import styles from "./page.module.css";
-import Head from 'next/head';
 
 // 1. IMPORT FONT DARI GOOGLE
 import { Press_Start_2P } from "next/font/google";
@@ -195,111 +194,105 @@ export default function Home() {
   const board = Array.from({ length: GRID_SIZE * GRID_SIZE });
 
   return (
-    <>
-      <Head>
-        <meta name="base:app_id" content="69683f8c4991800a6d9d63e3" />
-      </Head>
-        <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={`${styles.h1Snake} ${pixelFont.className}`}>Snakeeee Gameeee</h1>
-        <div className={styles.scoreBoard}>Score: {score}</div>
-      </div>
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <h1 className={`${styles.h1Snake} ${pixelFont.className}`}>Snakeeee Gameeee</h1>
+          <div className={styles.scoreBoard}>Score: {score}</div>
+        </div>
 
-      <div className={styles.gameBoard}>
-        
-        {/* LAYAR GAME OVER */}
-        {gameOver && (
-          <div className={styles.gameOverOverlay}>
-            <h2 className={styles.title}>Game Over!</h2>
-            <p>Final Score: {score}</p>
-            
-            <button className={styles.startButton} onClick={handleBackToMenu}>
-              Play Again
-            </button>
-
-            {/* --- TOMBOL SHARE SOSIAL MEDIA --- */}
-            <div className={styles.shareContainer}>
-              <button className={`${styles.shareBtn} ${styles.xBtn}`} onClick={handleShareX}>
-                X
-              </button>
-              <button className={`${styles.shareBtn} ${styles.warpBtn}`} onClick={handleShareWarpcast}>
-                Warp
-              </button>
-              <button className={`${styles.shareBtn} ${styles.baseBtn}`} onClick={handleShareNative}>
-                Share
-              </button>
-            </div>
-
-          </div>
-        )}
-
-        {/* LAYAR UTAMA / PILIH SKIN */}
-        {!isPlaying && !gameOver && (
-           <div className={styles.gameOverOverlay}>
-             <h2 className={styles.title}>Choose Your Skin</h2>
-             
-             <div className={styles.skinSelector}>
-                {SKINS.map((skin) => (
-                  <img 
-                    key={skin.id}
-                    src={skin.src}
-                    alt={skin.name}
-                    className={selectedSkin === skin.src ? `${styles.skinOption} ${styles.selectedSkin}` : styles.skinOption}
-                    onClick={() => setSelectedSkin(skin.src)}
-                  />
-                ))}
-             </div>
-
-             <button className={styles.startButton} onClick={handleStart}>
-               Start
-             </button>
-           </div>
-        )}
-
-        {/* LOGIKA RENDER PAPAN */}
-        {board.map((_, index) => {
-          const x = index % GRID_SIZE;
-          const y = Math.floor(index / GRID_SIZE);
+        <div className={styles.gameBoard}>
           
-          const isSnake = snake.some(s => s.x === x && s.y === y);
-          const isFood = food.x === x && food.y === y;
+          {/* LAYAR GAME OVER */}
+          {gameOver && (
+            <div className={styles.gameOverOverlay}>
+              <h2 className={styles.title}>Game Over!</h2>
+              <p>Final Score: {score}</p>
+              
+              <button className={styles.startButton} onClick={handleBackToMenu}>
+                Play Again
+              </button>
 
-          let content = null;
-          // PERBAIKAN 4: Gunakan 'const' karena variabel ini tidak direassign lagi
-          const cellStyle = styles.cell; 
+              {/* --- TOMBOL SHARE SOSIAL MEDIA --- */}
+              <div className={styles.shareContainer}>
+                <button className={`${styles.shareBtn} ${styles.xBtn}`} onClick={handleShareX}>
+                  X
+                </button>
+                <button className={`${styles.shareBtn} ${styles.warpBtn}`} onClick={handleShareWarpcast}>
+                  Warp
+                </button>
+                <button className={`${styles.shareBtn} ${styles.baseBtn}`} onClick={handleShareNative}>
+                  Share
+                </button>
+              </div>
 
-          if (isSnake) {
-            content = <img src={selectedSkin} alt="snake" className={styles.snakeImage} />;
-          } 
-          else if (isFood) {
-            content = <img src="/base.jpg" alt="food" className={styles.foodImage} />;
-          }
-
-          return (
-            <div key={`${x}-${y}`} className={cellStyle}>
-              {content}
             </div>
-          );
-        })}
-      </div>
+          )}
 
-      <div>
-        <p className={styles.copyRight}>
-          Build on <img src="/base.jpg" alt="Base" className={styles.inlineBaseLogo} /> - kersa.base.eth
-        </p>
-      </div>
+          {/* LAYAR UTAMA / PILIH SKIN */}
+          {!isPlaying && !gameOver && (
+            <div className={styles.gameOverOverlay}>
+              <h2 className={styles.title}>Choose Your Skin</h2>
+              
+              <div className={styles.skinSelector}>
+                  {SKINS.map((skin) => (
+                    <img 
+                      key={skin.id}
+                      src={skin.src}
+                      alt={skin.name}
+                      className={selectedSkin === skin.src ? `${styles.skinOption} ${styles.selectedSkin}` : styles.skinOption}
+                      onClick={() => setSelectedSkin(skin.src)}
+                    />
+                  ))}
+              </div>
 
-      <div className={styles.controls}>
-        <div></div> 
-        <button className={styles.controlBtn} onClick={() => handleMobileControl("UP")}>⬆️</button>
-        <div></div>
+              <button className={styles.startButton} onClick={handleStart}>
+                Start
+              </button>
+            </div>
+          )}
 
-        <button className={styles.controlBtn} onClick={() => handleMobileControl("LEFT")}>⬅️</button>
-        <button className={styles.controlBtn} onClick={() => handleMobileControl("DOWN")}>⬇️</button>
-        <button className={styles.controlBtn} onClick={() => handleMobileControl("RIGHT")}>➡️</button>
-      </div>
+          {/* LOGIKA RENDER PAPAN */}
+          {board.map((_, index) => {
+            const x = index % GRID_SIZE;
+            const y = Math.floor(index / GRID_SIZE);
+            
+            const isSnake = snake.some(s => s.x === x && s.y === y);
+            const isFood = food.x === x && food.y === y;
+
+            let content = null;
+            // PERBAIKAN 4: Gunakan 'const' karena variabel ini tidak direassign lagi
+            const cellStyle = styles.cell; 
+
+            if (isSnake) {
+              content = <img src={selectedSkin} alt="snake" className={styles.snakeImage} />;
+            } 
+            else if (isFood) {
+              content = <img src="/base.jpg" alt="food" className={styles.foodImage} />;
+            }
+
+            return (
+              <div key={`${x}-${y}`} className={cellStyle}>
+                {content}
+              </div>
+            );
+          })}
+        </div>
+
+        <div>
+          <p className={styles.copyRight}>
+            Build on <img src="/base.jpg" alt="Base" className={styles.inlineBaseLogo} /> - kersa.base.eth
+          </p>
+        </div>
+
+        <div className={styles.controls}>
+          <div></div> 
+          <button className={styles.controlBtn} onClick={() => handleMobileControl("UP")}>⬆️</button>
+          <div></div>
+
+          <button className={styles.controlBtn} onClick={() => handleMobileControl("LEFT")}>⬅️</button>
+          <button className={styles.controlBtn} onClick={() => handleMobileControl("DOWN")}>⬇️</button>
+          <button className={styles.controlBtn} onClick={() => handleMobileControl("RIGHT")}>➡️</button>
+        </div>
     </div>
-    </>
-  
   );
 }
