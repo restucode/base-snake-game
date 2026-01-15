@@ -16,7 +16,7 @@ export const minikitConfig = {
   miniapp: {
     version: "1",
     name: "Snakeeee Gameeee", 
-    subtitle: "Snakor, who can win?", 
+    subtitle: "Snakor who can win", 
     description: "Ads",
     screenshotUrls: [`${ROOT_URL}/kersa.jpg`],
     iconUrl: `${ROOT_URL}/kersa.jpg`,
@@ -27,9 +27,9 @@ export const minikitConfig = {
     primaryCategory: "social",
     tags: ["game", "quickstart", "snake", "playing"],
     heroImageUrl: `${ROOT_URL}/bg-base.png`, 
-    tagline: "Who can beat my score?",
+    tagline: "Who can beat my score",
     ogTitle: "Snakor",
-    ogDescription: "Classic Snake on Base! Choose skins like Brian & Jesse. Eat & grow!",
+    ogDescription: "Classic Snake on Base. Choose skins like Brian and Jesse. Eat and grow",
     ogImageUrl: `${ROOT_URL}/bg-base.png`,
   },
 } as const;
