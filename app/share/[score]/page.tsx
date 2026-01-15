@@ -27,12 +27,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `I scored ${score} in Base Snake!`,
       description: 'Play Classic Snake on Base',
       // PERBAIKAN: Gunakan imageUrl di sini, BUKAN link aplikasi
-      images: [imageUrl], 
+      images: [miniAppLink], 
     },
     other: {
       "fc:frame": "vNext",
       // PERBAIKAN: Gunakan imageUrl di sini agar preview muncul
-      "fc:frame:image": imageUrl, 
+      "fc:frame:image": miniAppLink, 
       "fc:frame:button:1": "Play Now",
       "fc:frame:button:1:action": "link",
       // PERBAIKAN: Gunakan link aplikasi HANYA di target tombol
