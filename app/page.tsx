@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import styles from "./page.module.css";
+import Head from 'next/head';
 
 // 1. IMPORT FONT DARI GOOGLE
 import { Press_Start_2P } from "next/font/google";
@@ -194,7 +195,11 @@ export default function Home() {
   const board = Array.from({ length: GRID_SIZE * GRID_SIZE });
 
   return (
-    <div className={styles.container}>
+    <>
+      <Head>
+        <meta name="base:app_id" content="69683f8c4991800a6d9d63e3" />
+      </Head>
+        <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={`${styles.h1Snake} ${pixelFont.className}`}>Snakeeee Gameeee</h1>
         <div className={styles.scoreBoard}>Score: {score}</div>
@@ -294,5 +299,7 @@ export default function Home() {
         <button className={styles.controlBtn} onClick={() => handleMobileControl("RIGHT")}>➡️</button>
       </div>
     </div>
+    </>
+  
   );
 }
