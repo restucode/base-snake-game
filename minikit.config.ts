@@ -29,7 +29,7 @@ export const minikitConfig = {
     heroImageUrl: `${ROOT_URL}/bg-base.png`, 
     tagline: "Who can beat my score?",
     ogTitle: "Snakor",
-    ogDescription: "Classic Snake on Base! 🐍 Choose skins like Brian & Jesse. Eat & grow!",
+    ogDescription: "Classic Snake on Base! Choose skins like Brian & Jesse. Eat & grow!",
     ogImageUrl: `${ROOT_URL}/bg-base.png`,
   },
 } as const;
