@@ -1,25 +1,24 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-// 1. TYPE DEFINITION (Tetap)
+// 1. TYPE DEFINITION
 type Props = {
   params: Promise<{ score: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  // 2. AWAIT PARAMS (Tetap)
   const { score } = await params;
 
-  // --- PERBAIKAN DI SINI ---
-  // Pastikan tidak ada slash (/) di akhir URL agar rapi
+  // URL Website Anda
   const appUrl = 'https://based-snake.vercel.app'; 
   
-  // URL untuk gambar Score
+  // A. URL UNTUK GAMBAR (Visual Score)
+  // Ini harus mengarah ke API OG agar muncul gambar biru dengan angka skor
   const imageUrl = `${appUrl}/api/og?score=${score}`;
 
-  // URL DEEP LINK WARPCAST
-  // Ini kuncinya: Membungkus URL game Anda ke dalam format launch frame Warpcast
-  const warpcastDeepLink = `https://farcaster.xyz/miniapps/V811TN_FcAWi/snakeeee-gameeee`;
+  // B. URL UNTUK TOMBOL (Action)
+  // Ini link yang Anda berikan (Link ke direktori Mini App)
+  const miniAppLink = `https://farcaster.xyz/miniapps/V811TN_FcAWi/snakeeee-gameeee`;
 
   return {
     title: `I scored ${score} in Base Snake!`,
@@ -27,19 +26,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: `I scored ${score} in Base Snake!`,
       description: 'Play Classic Snake on Base',
-      images: [warpcastDeepLink],
+      // PERBAIKAN: Gunakan imageUrl di sini, BUKAN link aplikasi
+      images: [imageUrl], 
     },
     other: {
       "fc:frame": "vNext",
-      "fc:frame:image": warpcastDeepLink,
+      // PERBAIKAN: Gunakan imageUrl di sini agar preview muncul
+      "fc:frame:image": imageUrl, 
       "fc:frame:button:1": "Play Now",
-      "fc:frame:button:1:action": "link", // Tetap 'link', tapi targetnya khusus
-      "fc:frame:button:1:target": warpcastDeepLink, // Gunakan Deep Link di sini
+      "fc:frame:button:1:action": "link",
+      // PERBAIKAN: Gunakan link aplikasi HANYA di target tombol
+      "fc:frame:button:1:target": miniAppLink, 
     },
   };
 }
 
-// 3. KOMPONEN UI (Tetap sama)
+// 3. KOMPONEN UI
 export default async function SharePage({ params }: Props) {
   const { score } = await params;
 
@@ -57,8 +59,6 @@ export default async function SharePage({ params }: Props) {
       <h1>Score: {score}</h1>
       <p style={{ marginBottom: '20px' }}>Your friend challenged you to beat their score!</p>
       
-      {/* Tombol ini tetap mengarah ke home biasa, karena jika user membuka
-          halaman share ini di browser biasa, mereka akan diarahkan ke game utama */}
       <Link href="/" style={{
         marginTop: '10px',
         padding: '15px 30px',

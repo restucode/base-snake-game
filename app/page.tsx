@@ -19,9 +19,6 @@ const INITIAL_SNAKE = [{ x: 10, y: 10 }];
 const INITIAL_FOOD = { x: 15, y: 10 };
 const GAME_SPEED = 150;
 
-// PERBAIKAN: Hapus konstanta GAME_URL karena tidak dipakai lagi
-// const GAME_URL = "..." <-- INI DIHAPUS
-
 // Daftar Skin
 const SKINS = [
   { id: 'brian', src: '/brian.png', name: 'Brian' },
@@ -33,13 +30,6 @@ const SKINS = [
 
 type Direction = "UP" | "DOWN" | "LEFT" | "RIGHT";
 
-// Fungsi helper untuk mendapatkan URL saat ini secara dinamis
-const getBaseUrl = () => {
-  if (typeof window !== 'undefined') return window.location.origin;
-  // Fallback jika SSR (Server Side Rendering), ganti dengan domain asli Anda
-  return 'https://based-snake.vercel.app'; 
-};
-
 export default function Home() {
   const { isFrameReady, setFrameReady } = useMiniKit();
   
@@ -47,7 +37,7 @@ export default function Home() {
   const [snake, setSnake] = useState(INITIAL_SNAKE);
   const [food, setFood] = useState(INITIAL_FOOD);
   
-  // PERBAIKAN: Hapus komentar eslint-disable karena sudah bersih
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setDirection] = useState<Direction>("RIGHT");
   
   const [gameOver, setGameOver] = useState(false);
@@ -162,24 +152,35 @@ export default function Home() {
     setDirection(dir);
   };
 
-  // --- SHARE FUNCTIONS ---
+  // --- SHARE FUNCTIONS (DIPERBAIKI) ---
   const getShareText = () => `I scored ${score} in Base Snake! 🐍 Can you beat me?`;
 
   const handleShareX = () => {
     const text = encodeURIComponent(getShareText());
-    // Gunakan getBaseUrl() pengganti GAME_URL
-    const url = encodeURIComponent(`${getBaseUrl()}/share/${score}`);
+    // WAJIB Hardcode URL Vercel di sini agar link tidak error saat test lokal
+    const appUrl = 'https://based-snake.vercel.app';
+    const url = encodeURIComponent(`${appUrl}/share/${score}`);
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
   };
 
   const handleShareWarpcast = () => {
     const text = encodeURIComponent(getShareText());
-    const url = encodeURIComponent(`${getBaseUrl()}/share/${score}`); 
+    
+    // PERBAIKAN PENTING:
+    // Kita gunakan URL Vercel asli.
+    // Ketika orang mengklik link ini, file 'app/share/[score]/page.tsx' akan bekerja
+    // dan tombol 'Play Now' di frame tersebut SUDAH kita atur ke Deep Link Warpcast.
+    // Jadi user TIDAK akan terlempar ke browser.
+    const appUrl = 'https://based-snake.vercel.app';
+    const url = encodeURIComponent(`${appUrl}/share/${score}`); 
+    
     window.open(`https://warpcast.com/~/compose?text=${text}&embeds[]=${url}`, '_blank');
   };
 
   const handleShareNative = async () => {
-    const shareUrl = `${getBaseUrl()}/share/${score}`;
+    const appUrl = 'https://based-snake.vercel.app';
+    const shareUrl = `${appUrl}/share/${score}`;
+    
     if (navigator.share) {
       try {
         await navigator.share({
