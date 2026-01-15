@@ -10,7 +10,6 @@ export async function generateMetadata(): Promise<Metadata> {
     title: minikitConfig.miniapp.name,
     description: minikitConfig.miniapp.description,
     other: {
-      "base:app_id": "69683f8c4991800a6d9d63e3",
       "fc:frame": JSON.stringify({
         version: minikitConfig.miniapp.version,
         imageUrl: minikitConfig.miniapp.heroImageUrl,
@@ -44,6 +43,7 @@ export default function RootLayout({
   return (
     <RootProvider>
       <html lang="en">
+        <meta name="base:app_id" content="69683f8c4991800a6d9d63e3" />
         <body className={`${inter.variable} ${sourceCodePro.variable}`}>
           <SafeArea>{children}</SafeArea>
         </body>
