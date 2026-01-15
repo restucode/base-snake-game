@@ -20,7 +20,7 @@ const INITIAL_FOOD = { x: 15, y: 10 };
 const GAME_SPEED = 150;
 
 // GANTI DENGAN URL DEPLOYMENT ANDA NANTI
-const GAME_URL = "https://your-game-url.vercel.app"; 
+const GAME_URL = "https://based-snake.vercel.app/"; 
 
 // Daftar Skin
 const SKINS = [
