@@ -159,37 +159,49 @@ export default function Home() {
   };
 
   // --- SHARE FUNCTIONS ---
+ const getBaseUrl = () => {
+  if (typeof window !== 'undefined') return window.location.origin;
+  return 'https://based-snake.vercel.app'; 
+};
+
+// ... di dalam component Home ...
+
+  // --- SHARE FUNCTIONS YANG SUDAH DIUPDATE ---
   const getShareText = () => `I scored ${score} in Base Snake! 🐍 Can you beat me?`;
 
   const handleShareX = () => {
     const text = encodeURIComponent(getShareText());
-    const url = encodeURIComponent(GAME_URL);
+    // SHARE KE HALAMAN KHUSUS SKOR
+    const url = encodeURIComponent(`${getBaseUrl()}/share/${score}`);
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
   };
 
   const handleShareWarpcast = () => {
     const text = encodeURIComponent(getShareText());
-    const url = encodeURIComponent(GAME_URL); 
+    // SHARE KE HALAMAN KHUSUS SKOR
+    // Farcaster akan crawl halaman ini dan mengambil gambar dari generateMetadata
+    const url = encodeURIComponent(`${getBaseUrl()}/share/${score}`); 
     window.open(`https://warpcast.com/~/compose?text=${text}&embeds[]=${url}`, '_blank');
   };
 
   const handleShareNative = async () => {
+    const shareUrl = `${getBaseUrl()}/share/${score}`;
+    
     if (navigator.share) {
       try {
         await navigator.share({
           title: 'Base Snake Game',
           text: getShareText(),
-          url: GAME_URL,
+          url: shareUrl,
         });
       } catch (err) {
         console.log('Error sharing:', err);
       }
     } else {
-      navigator.clipboard.writeText(`${getShareText()} ${GAME_URL}`);
+      navigator.clipboard.writeText(`${getShareText()} ${shareUrl}`);
       alert("Link copied to clipboard!");
     }
   };
-
   // --- Rendering Board ---
   const board = Array.from({ length: GRID_SIZE * GRID_SIZE });
 
