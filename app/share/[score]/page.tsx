@@ -27,11 +27,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: `I scored ${score} in Base Snake!`,
       description: 'Play Classic Snake on Base',
-      images: [imageUrl],
+      images: [warpcastDeepLink],
     },
     other: {
       "fc:frame": "vNext",
-      "fc:frame:image": imageUrl,
+      "fc:frame:image": warpcastDeepLink,
       "fc:frame:button:1": "Play Now",
       "fc:frame:button:1:action": "link", // Tetap 'link', tapi targetnya khusus
       "fc:frame:button:1:target": warpcastDeepLink, // Gunakan Deep Link di sini
