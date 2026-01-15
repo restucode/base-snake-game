@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   // URL DEEP LINK WARPCAST
   // Ini kuncinya: Membungkus URL game Anda ke dalam format launch frame Warpcast
-  const warpcastDeepLink = `https://farcaster.xyz/~/frames/launch?url=${encodeURIComponent(appUrl)}`;
+  const warpcastDeepLink = `https://farcaster.xyz/miniapps/V811TN_FcAWi/snakeeee-gameeee`;
 
   return {
     title: `I scored ${score} in Base Snake!`,
