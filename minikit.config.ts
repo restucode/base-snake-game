@@ -30,7 +30,7 @@ export const minikitConfig = {
     tagline: "Who can beat my score",
     ogTitle: "Snakor",
     ogDescription: "Classic Snake on Base. Choose skins like Brian and Jesse. Eat and grow",
-    // ogImageUrl: `${ROOT_URL}/bg-base.png`,
+    ogImageUrl: `${ROOT_URL}/bg-base.png`,
   },
 } as const;
 
